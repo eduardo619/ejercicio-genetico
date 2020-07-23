@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ejercicio_genetico
 {
@@ -48,6 +44,116 @@ namespace ejercicio_genetico
                 this.fitness[i] = this.EvaluaIndividuo(this.poblacion[i]);
 
             sobrevivientes = this.SeleccionarSobrevivientes(cant_sobrevivientes);
+
+            for (int i = 0; i < cant_sobrevivientes; i++)
+            {
+                muestra = this.tomarMuestra();
+                padres = this.obtenerPadres(muestra);
+                hijos = this.Cruza(padres);
+                nueva_generacion[i] = hijos[0];
+                if (i < this.tam_poblacion)
+                {
+                    nueva_generacion[i] = hijos[1];
+                    i++;
+                }
+            }
+
+            int[][] indAMutar = this.tomarMuestraMutacion(cant_mutados, nueva_generacion);
+
+            for (int i = 0; i < cant_mutados; i++)
+                indAMutar[i] = this.Mutar(indAMutar[i]);
+
+            poblacion = nueva_generacion;
+        }
+
+        private int[] Mutar(int[] v)
+        {
+            throw new NotImplementedException();
+        }
+
+        private int[][] tomarMuestraMutacion(int cant_mutados, int[][] nueva_generacion)
+        {
+            int[][] muestra = new int[cant_mutados][];
+
+            for (int i = 0; i < cant_mutados; i++)
+            {
+                int pos = this.aleatorio.Next(this.tam_poblacion);
+                muestra[i] = nueva_generacion[pos];
+            }
+
+            return muestra;
+        }
+
+        private int[][] Cruza(int[][] padres)
+        {
+            int[][] hijos = new int[2][];
+            int[] padre1 = padres[0], padre2 = padres[1];
+            bool p = true;
+
+            hijos[0] = new int[tam_individuo];
+            hijos[0] = new int[tam_individuo];
+
+            for (int col = 0; col < tam_individuo; col++)
+            {
+                if (p)
+                {
+                    hijos[0][col] = padres[0][col];
+                    hijos[1][col] = padres[1][col];
+                }
+                else
+                {
+                    hijos[0][col] = padres[1][col];
+                    hijos[1][col] = padres[0][col];
+                }
+            }
+
+            return hijos;
+        }
+
+        private int[][] obtenerPadres(int[][] muestra)
+        {
+            int[][] padres = new int[2][];
+
+            double[] fit = new double[this.tam_muestra];
+
+            for (int i = 0; i < this.tam_muestra; i++)
+                fit[i] = this.EvaluaIndividuo(muestra[i]);
+
+            int[] posicion_padres = new int[2];
+
+            for (int i = 0; i < 2; i++)
+            {
+                int pos_mejor = 0;
+                double mejor = fit[pos_mejor];
+
+                for (int j = 0; j < this.tam_muestra; j++)
+                {
+                    if (fit[j] < mejor)
+                    {
+                        pos_mejor = j;
+                        mejor = fit[pos_mejor];
+                    }
+                }
+                posicion_padres[i] = pos_mejor;
+                fit[posicion_padres[i]] = double.MaxValue;
+            }
+            padres[0] = muestra[posicion_padres[0]];
+            padres[0] = muestra[posicion_padres[0]];
+
+            return padres;
+        }
+
+        private int[][] tomarMuestra()
+        {
+            int[][] m = new int[this.tam_muestra][];
+
+            for (int i = 0; i < this.tam_muestra; i++)
+            {
+                int pos = this.aleatorio.Next(0, this.tam_poblacion);
+                m[i] = this.poblacion[pos];
+            }
+
+            return m;
         }
 
         private double EvaluaIndividuo(int[] valor)
