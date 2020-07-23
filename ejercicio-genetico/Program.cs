@@ -10,6 +10,9 @@ namespace ejercicio_genetico
     {
         static void Main(string[] args)
         {
+            Genetico obj = new Genetico(20, 3, 10, 0.1, 0.1);
+            obj.Algoritmo();
+            Console.ReadKey();
         }
     }
 }
