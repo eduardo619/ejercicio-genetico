@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace ejercicio_genetico
 {
@@ -10,20 +12,25 @@ namespace ejercicio_genetico
         private Random aleatorio;
         private int[][] poblacion;
         private double[] fitness;
+        private StringBuilder csv_content;
+        private string csv_path;
 
-        public Genetico(int t_p, int t_m, int n_g, double p_m, double p_e)
+        public Genetico(int t_p, double prc_muestra, int n_g, double p_m, double p_e)
         {
             this.tam_poblacion = t_p;
-            this.tam_muestra = t_m;
+            this.tam_muestra = (int)(prc_muestra * this.tam_poblacion);
             this.num_generaciones = n_g;
             this.porc_mutacion = p_m;
             this.porc_elitismo = p_e;
             this.poblacion = new int[this.tam_poblacion][];
             this.fitness = new double[this.tam_poblacion];
+            csv_content = new StringBuilder();
         }
 
         public void Algoritmo()
         {
+            csv_content.AppendLine("INDICE,UBICACION DEL MEJOR,FORMA,FITNESS");
+
             int cant_sobrevivientes = (int)(this.tam_poblacion * porc_elitismo);
             int cant_mutados = (int)(this.tam_poblacion * porc_mutacion);
 
@@ -40,10 +47,9 @@ namespace ejercicio_genetico
                 for (int i = 0; i < this.tam_poblacion; i++) //Evaluar la poblacion
                     this.fitness[i] = this.EvaluaIndividuo(this.poblacion[i]);
 
-                double[] best = this.ObtieneMejor(); //Posicion 0: indice del mejor de la poblacion; Posiicon 1: Valor de fitness
+                double[] best = this.ObtieneMejor(); //Posicion 0: indice del mejor de la poblacion; Posicicon 1: Valor de fitnesS
                 string bestz = this.toString(poblacion[(int)(best[0])]);
-
-                Console.WriteLine("El mejor individuo de la generacion " + (g + 1) + " esta en la posicion: " + (int)(best[0]) + "\nCon un fitness de: " + best[1] + " o " + Convert.ToInt32(bestz, 2) + "\nCon la estrucura: " + bestz);
+                csv_content.AppendLine(g + "," + (int)best[0] + "," + bestz + "," + best[1]);
 
                 sobrevivientes = this.SeleccionarSobrevivientes(cant_sobrevivientes);
 
@@ -67,7 +73,13 @@ namespace ejercicio_genetico
                     indAMutar[i] = this.Mutar(indAMutar[i]);
 
                 poblacion = nueva_generacion;
+
+                //Console.WriteLine("El mejor individuo de la generacion " + (g + 1) + " esta en la posicion: " + (int)(best[0]) + "\nCon un fitness de: " + best[1] + " o " + Convert.ToInt32(bestz, 2) + "\nCon la estrucura: " + bestz);
             }
+
+            DateTime dt = DateTime.Now;
+            csv_path = "D:\\CSV\\genetico" + dt.Minute + dt.Second + dt.Millisecond + ".csv";
+            File.AppendAllText(csv_path, csv_content.ToString());
         }
 
         private double[] ObtieneMejor()
@@ -199,18 +211,14 @@ namespace ejercicio_genetico
                 int pos = this.aleatorio.Next(0, this.tam_poblacion);
                 m[i] = this.poblacion[pos];
             }
-
             return m;
         }
 
         private double EvaluaIndividuo(int[] valor)
         {
             string val = "" + valor[0] + valor[1] + valor[2] + valor[3] + valor[4] + valor[5] + valor[6] + valor[7];
-
             int numero = Convert.ToInt32(val, 2);
-
             double resultado = Math.Sin(Math.PI * numero / 256);
-
             return resultado;
         }
 
