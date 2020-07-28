@@ -60,7 +60,7 @@ namespace ejercicio_genetico
                 {
                     muestra = this.tomarMuestra();
                     padres = this.obtenerPadres(muestra);
-                    hijos = this.Cruza(padres);
+                    hijos = this.Cruza2Puntos(padres);
                     nueva_generacion[i] = hijos[0];
                     i++;
                     if (i < this.tam_poblacion)
@@ -142,8 +142,6 @@ namespace ejercicio_genetico
         private int[][] Cruza(int[][] padres)
         {
             int[][] hijos = new int[2][];
-            int[] padre1 = padres[0], padre2 = padres[1];
-            bool p = true;
 
             hijos[0] = new int[tam_individuo];
             hijos[1] = new int[tam_individuo];
@@ -163,7 +161,64 @@ namespace ejercicio_genetico
                     hijos[1][col] = padres[0][col];
                     contador++;
                 }
-                
+            }
+            return hijos;
+        }
+
+        private int[][] CruzaUniforme(int[][] padres)
+        {
+            int[][] hijos = new int[2][];
+
+            hijos[0] = new int[tam_individuo];
+            hijos[1] = new int[tam_individuo];
+
+            bool non = false;
+            for (int i = 0; i < tam_individuo; i++)
+            {
+                if (non)
+                {
+                    hijos[0][i] = padres[0][i];
+                    hijos[1][i] = padres[1][i];
+                    non = false;
+                }
+                else
+                {
+                    hijos[0][i] = padres[1][i];
+                    hijos[1][i] = padres[0][i];
+                    non = true;
+                }
+            }
+            return hijos;
+        }
+
+        private int[][] Cruza2Puntos(int[][] padres) ///Falta para implementar
+        {
+            int[][] hijos = new int[2][];
+
+            hijos[0] = new int[tam_individuo];
+            hijos[1] = new int[tam_individuo];
+
+            int limit = (int)Math.Round((double)tam_individuo / 3);
+            for (int i = 0; i < tam_individuo; i++)
+            {
+                if (i < limit)
+                {
+                    hijos[0][i] = padres[1][i];
+                    hijos[1][i] = padres[0][i];
+                }
+                else
+                {
+                    if (i < (limit * 2))
+                    {
+                        hijos[0][i] = padres[0][i];
+                        hijos[1][i] = padres[1][i];
+                    }
+                    else
+                    {
+                        hijos[0][i] = padres[1][i];
+                        hijos[1][i] = padres[0][i];
+                    }
+                }
             }
 
             return hijos;
@@ -194,7 +249,7 @@ namespace ejercicio_genetico
                     }
                 }
                 posicion_padres[i] = pos_mejor;
-                fit[posicion_padres[i]] = double.MaxValue;
+                fit[posicion_padres[i]] = double.MinValue;
             }
             padres[0] = muestra[posicion_padres[0]];
             padres[1] = muestra[posicion_padres[1]];
@@ -245,7 +300,7 @@ namespace ejercicio_genetico
                     }
                 }
                 s[i] = this.poblacion[mejor_pos];
-                this.fitness[mejor_pos] = double.MaxValue;
+                this.fitness[mejor_pos] = double.MinValue;
             }
             return s;
         }
